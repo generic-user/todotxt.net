@@ -617,8 +617,10 @@ namespace Client
                     include = !task.Raw.Contains("h:1");
 
                 if (include)
+
                     // hide future tasks only if filter doesn't use threshold
                     if (User.Default.FilterFutureTasks && !filters.Contains("t:"))
+
                         include = String.IsNullOrEmpty(task.ThresholdDate) || task.ThresholdDate.IsDateLessThan(DateTime.Now.AddDays(1));
 
                 if (include)
@@ -760,7 +762,9 @@ namespace Client
         public void ApplyHideFutureTasks()
         {
             User.Default.FilterFutureTasks = !User.Default.FilterFutureTasks;
+
             GetSelectedTasks();
+
             UpdateDisplayedTasks();
             SetSelectedTasks();
 

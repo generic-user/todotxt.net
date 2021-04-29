@@ -23,7 +23,9 @@ namespace ToDoLib
         private const string RelativeDatePatternBare =
             @"(?<dateRelative>today|tomorrow|(?<dateRelativeOffset>(-?\d+[dwm]))|(?<weekday>mon(?:day)?|tue(?:sday)?|wed(?:nesday)?|thu(?:rsday)?|fri(?:day)?|sat(?:urday)?|sun(?:day)?))";
         private const string DueRelativePattern = @"\bdue:" + RelativeDatePatternBare + @"\b";
+
         public const string ThresholdRelativePattern = @"t:"+ RelativeDatePatternBare;
+
 
         private const string DueDatePattern = @"due:(?<date>(\d{4})-(\d{2})-(\d{2}))";
         private const string ThresholdDatePattern = @"t:(?<date>(\d{4})-(\d{2})-(\d{2}))";
@@ -181,7 +183,9 @@ namespace ToDoLib
             Body = raw.Trim();
         }
 
+
         static public string ParseDate(string raw, string datePattern)
+
         {
 
             //Replace relative days with hard date
@@ -206,6 +210,7 @@ namespace ToDoLib
                     date = date.AddDays(1);
                     isValid = true;
                 }
+
                 // check if date has been specified in relative offset from today in [d]ays, [w]eeks or [m]onths
                 // - 1d -> one day from today
                 // - 2w -> two weeks from today
@@ -228,6 +233,7 @@ namespace ToDoLib
                         isValid = true;
                     }
                 }
+
                 else if (regMatch.Groups["weekday"].Success)
                 {
                     var count = 0;
