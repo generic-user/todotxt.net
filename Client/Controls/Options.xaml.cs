@@ -42,6 +42,7 @@ namespace Client
             this.TaskListFont = taskFont;
             this.cbDisplayStatusBar.IsChecked = User.Default.DisplayStatusBar;
             this.cbCheckForUpdates.IsChecked = User.Default.CheckForUpdates;
+            this.cbSelectCurrentFilterString.IsChecked = User.Default.SelectCurrentFilterString;
         }
 
         private FontInfo taskListFont;
@@ -111,6 +112,13 @@ namespace Client
             {
                 this.TaskListFont = taskFontDialog.Font;
             }
+        }
+
+        private void Content_Rendered(object sender, EventArgs e)
+        {
+            this.colorPickerProject.selectColor((Color)ColorConverter.ConvertFromString(User.Default.ProjectBrushColor));
+            this.colorPickerDate.selectColor((Color)ColorConverter.ConvertFromString(User.Default.DateBrushColor));
+            this.colorPickerContext.selectColor((Color)ColorConverter.ConvertFromString(User.Default.ContextBrushColor));
         }
     }
 }

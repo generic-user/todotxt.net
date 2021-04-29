@@ -56,6 +56,7 @@
         <RoutedUICommand x:Key="SortByCompleted" Text="Sort By Completed" />
         <RoutedUICommand x:Key="SortByContext" Text="Sort By Context" />
         <RoutedUICommand x:Key="SortByDueDate" Text="Sort By Due Date" />
+        <RoutedUICommand x:Key="SortByThreshold" Text="Sort By Threshold" />
         <RoutedUICommand x:Key="SortByCreatedDate" Text="Sort By Created Date" />
         <RoutedUICommand x:Key="SortByPriority" Text="Sort By Priority" />
         <RoutedUICommand x:Key="SortByProject" Text="Sort By Priority" />
@@ -112,6 +113,78 @@
         </Style>
         <convertors:ActiveFilterToStatusConvertor x:Key="filterToStatusConv"></convertors:ActiveFilterToStatusConvertor>
         <convertors:SortTypeToDescriptionConvertor x:Key="sortTypeToDescConv"></convertors:SortTypeToDescriptionConvertor>
+        <Style TargetType="MenuItem">
+            <Setter Property="Background" Value="#FF1D2528"></Setter>
+            <Setter Property="BorderBrush" Value="#FF1D2528"/>
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <!-- From: https://stackoverflow.com/a/12115730 -->
+        <Style x:Key="{x:Static MenuItem.SeparatorStyleKey}" TargetType="{x:Type Separator}">
+            <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"/>
+            <Setter Property="Margin" Value="1,0"/>
+            <Setter Property="Focusable" Value="false"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Separator}">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                Background="{TemplateBinding Background}"
+                                Height="1"
+                                SnapsToDevicePixels="true"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <ControlTemplate x:Key="MenuTemplate" TargetType="{x:Type MenuItem}">
+            <Border x:Name="templateRoot" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                <Grid VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <ContentPresenter x:Name="Icon" Content="{TemplateBinding Icon}" ContentSource="Icon" HorizontalAlignment="Center" Height="16" Margin="3" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center" Width="16"/>
+                    <Path x:Name="GlyphPanel" Data="F1M10,1.2L4.7,9.1 4.5,9.1 0,5.2 1.3,3.5 4.3,6.1 8.3,0 10,1.2z" Fill="{TemplateBinding Foreground}" FlowDirection="LeftToRight" Margin="3" Visibility="Collapsed" VerticalAlignment="Center"/>
+                    <ContentPresenter ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" Grid.Column="1" ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentSource="Header" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                    <Popup HorizontalOffset="-1" VerticalOffset="1" x:Name="PART_Popup" AllowsTransparency="True" Focusable="False" IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}" Placement="Bottom" Margin="5">
+                        <Border x:Name="SubMenuBorder" BorderBrush="#FFF0F0F0" BorderThickness="1" Background="#FFF0F0F0" Padding="0">
+                            <ScrollViewer x:Name="SubMenuScrollViewer" Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}">
+                                <Grid RenderOptions.ClearTypeHint="Enabled">
+                                    <Canvas HorizontalAlignment="Left" Height="0" VerticalAlignment="Top" Width="0">
+                                        <Rectangle x:Name="OpaqueRect" Fill="LightSlateGray" Height="{Binding ActualHeight, ElementName=SubMenuBorder}" Width="{Binding ActualWidth, ElementName=SubMenuBorder}"/>
+                                    </Canvas>
+                                    <Rectangle Fill="#FFD7D7D7" HorizontalAlignment="Left" Margin="29,2,0,2" Width="1"/>
+                                    <ItemsPresenter x:Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Cycle" Grid.IsSharedSizeScope="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" KeyboardNavigation.TabNavigation="Cycle"/>
+                                </Grid>
+                            </ScrollViewer>
+                        </Border>
+                    </Popup>
+                </Grid>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsSuspendingPopupAnimation" Value="True">
+                    <Setter Property="PopupAnimation" TargetName="PART_Popup" Value="None"/>
+                </Trigger>
+                <Trigger Property="Icon" Value="{x:Null}">
+                    <Setter Property="Visibility" TargetName="Icon" Value="Collapsed"/>
+                </Trigger>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter Property="Visibility" TargetName="GlyphPanel" Value="Visible"/>
+                    <Setter Property="Visibility" TargetName="Icon" Value="Collapsed"/>
+                </Trigger>
+                <Trigger Property="IsHighlighted" Value="True">
+                    <Setter Property="Background" TargetName="templateRoot" Value="LightSlateGray"/>
+                    <Setter Property="BorderBrush" TargetName="templateRoot" Value="#FF26A0DA"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="#FF707070"/>
+                    <Setter Property="Fill" TargetName="GlyphPanel" Value="#FF707070"/>
+                </Trigger>
+                <Trigger Property="CanContentScroll" SourceName="SubMenuScrollViewer" Value="False">
+                    <Setter Property="Canvas.Top" TargetName="OpaqueRect" Value="{Binding VerticalOffset, ElementName=SubMenuScrollViewer}"/>
+                    <Setter Property="Canvas.Left" TargetName="OpaqueRect" Value="{Binding HorizontalOffset, ElementName=SubMenuScrollViewer}"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
     </Window.Resources>
     <Window.CommandBindings>
         <!-- File menu commands -->
@@ -151,6 +224,7 @@
         <CommandBinding Command="{StaticResource SortByCompleted}" CanExecute="WhenTasksLoadedCanExecute" Executed="SortByCompletedExecuted"/>
         <CommandBinding Command="{StaticResource SortByContext}" CanExecute="WhenTasksLoadedCanExecute" Executed="SortByContextExecuted"/>
         <CommandBinding Command="{StaticResource SortByDueDate}" CanExecute="WhenTasksLoadedCanExecute" Executed="SortByDueDateExecuted"/>
+        <CommandBinding Command="{StaticResource SortByThreshold}" CanExecute="WhenTasksLoadedCanExecute" Executed="SortByThresholdExecuted"/>
         <CommandBinding Command="{StaticResource SortByCreatedDate}" CanExecute="WhenTasksLoadedCanExecute" Executed="SortByCreatedDateExecuted"/>
         <CommandBinding Command="{StaticResource SortByPriority}" CanExecute="WhenTasksLoadedCanExecute" Executed="SortByPriorityExecuted"/>
         <CommandBinding Command="{StaticResource SortByProject}" CanExecute="WhenTasksLoadedCanExecute" Executed="SortByProjectExecuted"/>
@@ -204,18 +278,20 @@
         <KeyBinding Command="{StaticResource SortByPriority}" Key="NumPad6" Modifiers="Control"/>
         <KeyBinding Command="{StaticResource SortByProject}" Key="D7" Modifiers="Control"/>
         <KeyBinding Command="{StaticResource SortByProject}" Key="NumPad7" Modifiers="Control"/>
+        <KeyBinding Command="{StaticResource SortByThreshold}" Key="D8" Modifiers="Control"/>
+        <KeyBinding Command="{StaticResource SortByThreshold}" Key="NumPad8" Modifiers="Control"/>
         <KeyBinding Command="{StaticResource SortByFileOrder}" Key="D0" Modifiers="Control"/>
         <KeyBinding Command="{StaticResource SortByFileOrder}" Key="NumPad0" Modifiers="Control"/>
     </Window.InputBindings>
-    <Grid Name="stackPanel1" Margin="0,0,0,0" ShowGridLines="False" >
+    <Grid Name="stackPanel1" Margin="0,0,0,0" ShowGridLines="False" Background="#FF273136" >
         <Grid.RowDefinitions>
             <RowDefinition Height="25"></RowDefinition>
             <RowDefinition Height="25"></RowDefinition>
             <RowDefinition Height="*" ></RowDefinition>
             <RowDefinition Height="23"></RowDefinition>
         </Grid.RowDefinitions>
-        <Menu Grid.Row="0" Height="23" Name="menu1" VerticalAlignment="Top" IsMainMenu="True" KeyboardNavigation.TabNavigation="None">
-            <MenuItem Header="_File">
+        <Menu Grid.Row="0" Height="25" Name="menu1" VerticalAlignment="Top" IsMainMenu="True" KeyboardNavigation.TabNavigation="None" Background="#FF1D2528" Foreground="#A5F2FFFC">
+            <MenuItem Header="_File" Template="{DynamicResource MenuTemplate}" Height="25">
                 <MenuItem Header="_New" Command="{StaticResource NewFile}" InputGestureText="Ctrl+N"/>
                 <MenuItem Header="_Open" Command="{StaticResource OpenFile}" InputGestureText="Ctrl+O"/>
                 <MenuItem Header="_Print" Command="{StaticResource PrintFile}" InputGestureText="Ctrl+P"/>
@@ -228,13 +304,13 @@
                 <Separator />
                 <MenuItem Header="E_xit" Command="{StaticResource ExitApplication}" InputGestureText="Alt+F4"/>
             </MenuItem>
-            <MenuItem Header="_Edit">
+            <MenuItem Header="_Edit" Template="{DynamicResource MenuTemplate}">
                 <MenuItem Header="Cut" Command="Cut" InputGestureText="Ctrl+X"/>
                 <MenuItem Header="Copy" Command="Copy" InputGestureText="Ctrl+C"/>
                 <MenuItem Header="Copy Task to New Task" Command="{StaticResource CopySelectedTaskToNewTask}" InputGestureText="Shift+Ctrl+C"/>
                 <MenuItem Header="Paste" Command="Paste" InputGestureText="Ctrl+V"/>
             </MenuItem>
-            <MenuItem Header="_Task">
+            <MenuItem Header="_Task" Template="{DynamicResource MenuTemplate}">
                 <MenuItem Header="Add _New Task" Command="{StaticResource NewTask}" InputGestureText="N"/>
                 <MenuItem Header="_Update Task" Command="{StaticResource UpdateTask}" InputGestureText="U"/>
                 <MenuItem Header="Append _Text" Command="{StaticResource AppendText}" InputGestureText="T"/>
@@ -259,7 +335,7 @@
                 <MenuItem Header="Decrease Threshold Date By 1 Day" Command="{StaticResource DecrementThresholdDate}" InputGestureText="Ctrl+Down"/>
                 <MenuItem Header="Remove Threshold Date" Command="{StaticResource RemoveThresholdDate}" InputGestureText="Ctrl+Left/Right"/>
             </MenuItem>
-            <MenuItem Header="_Sort" Name="sortMenu">
+            <MenuItem Header="_Sort" Name="sortMenu" Template="{DynamicResource MenuTemplate}">
                 <MenuItem Header="_Order in file" IsCheckable="True" Command="{StaticResource SortByFileOrder}" InputGestureText="Ctrl+0" Tag="File"/>
                 <MenuItem Header="_Alphabetical" IsCheckable="True" Command="{StaticResource SortByAlphabetical}" InputGestureText="Ctrl+1" Tag="Alphabetical"/>
                 <MenuItem Header="_Completed" IsCheckable="True" Command="{StaticResource SortByCompleted}" InputGestureText="Ctrl+2" Tag="Completed"/>
@@ -268,8 +344,9 @@
                 <MenuItem Header="C_reation Date" IsCheckable="True" Command="{StaticResource SortByCreatedDate}" InputGestureText="Ctrl+5" Tag="CreatedDate"/>
                 <MenuItem Header="_Priority" IsCheckable="True" Command="{StaticResource SortByPriority}" InputGestureText="Ctrl+6" Tag="Priority"/>
                 <MenuItem Header="Pro_ject" IsCheckable="True" Command="{StaticResource SortByProject}" InputGestureText="Ctrl+7" Tag="Project"/>
+                <MenuItem Header="_Threshold" IsCheckable="True" Command="{StaticResource SortByThreshold}" InputGestureText="Ctrl+8" Tag="Threshold"/>
             </MenuItem>
-            <MenuItem Header="Filter" Name="filterMenu">
+            <MenuItem Header="Filter" Name="filterMenu" Template="{DynamicResource MenuTemplate}">
                 <MenuItem Header="Hide future tasks" Command="{StaticResource ApplyFilterFutureTasks}" InputGestureText="Ctrl+T" IsCheckable="True" Tag="FutureTasks" FontWeight="Normal" />
                 <MenuItem Header="Show hidden tasks" Command="{StaticResource ApplyShowHiddenTasks}" InputGestureText="Ctrl+H" IsCheckable="True" Tag="HiddenTasks" FontWeight="Normal" />
                 <Separator/>
@@ -287,25 +364,27 @@
                 <MenuItem Header="Apply Preset Filter _8" Command="{StaticResource ApplyFilterPreset8}" InputGestureText="8" IsCheckable="True" Tag="Preset8" FontWeight="Normal" />
                 <MenuItem Header="Apply Preset Filter _9" Command="{StaticResource ApplyFilterPreset9}" InputGestureText="9" IsCheckable="True" Tag="Preset9" FontWeight="Normal" />
             </MenuItem>
-            <MenuItem Header="_Help">
+            <MenuItem Header="_Help" Template="{DynamicResource MenuTemplate}">
                 <MenuItem Header="_About" Command="{StaticResource HelpAbout}" InputGestureText="?" />
                 <MenuItem Header="_View Error Log" Command="{StaticResource ViewLog}" />
                 <MenuItem Header="_Donate" Command="{StaticResource Donate}" />
                 <MenuItem Header="_Show Calendar" Command="{StaticResource ShowCalendar}" InputGestureText="Right Shift" />
             </MenuItem>
             <MenuItem Name="UpdateMenu" Header="*Update available*" Visibility="Hidden" Click="GetUpdate" />
-            <Menu.Background>
-                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                    <GradientStop Color="#f8f8f8" Offset="0" />
-                    <GradientStop Color="#f0f0f0" Offset="1" />
-                </LinearGradientBrush>
-            </Menu.Background>
         </Menu>
         <local:IntellisenseTextBox Grid.Row="1" Height="23" Margin="0,0,0,0" x:Name="taskText" AcceptsReturn="False" Cursor="IBeam" VerticalAlignment="Top"
                                    KeyUp="taskText_PreviewKeyUp" 
                                    TaskList="{Binding TaskList}"
-                                   CaseSensitive="{Binding Source={x:Static local:User.Default}, Path=IntellisenseCaseSensitive}" />
-        <ListBox Grid.Row="2" ItemsSource="{Binding Tasks}" IsSynchronizedWithCurrentItem="True" SelectedItem="{Binding SelectedItem}" Name="lbTasks" Margin="0,10,0,0" SelectedIndex="0" IsTextSearchEnabled="False" AlternationCount="2" BorderBrush="{x:Null}" SelectionMode="Extended" Style="{StaticResource WordWrapEnabledListBox}">
+                                   CaseSensitive="{Binding Source={x:Static local:User.Default}, Path=IntellisenseCaseSensitive}" Background="#FF273136" Foreground="#FFF2FFFC"/>
+        <ListBox Grid.Row="2" ItemsSource="{Binding Tasks}" IsSynchronizedWithCurrentItem="True" SelectedItem="{Binding SelectedItem}" Name="lbTasks" Margin="0,10,0,0" SelectedIndex="0" IsTextSearchEnabled="False" AlternationCount="2" BorderBrush="#FF273136" SelectionMode="Extended" Style="{StaticResource WordWrapEnabledListBox}" Background="#FF273136" Foreground="#FFF32410">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <!--This remove the border around the listbox-->
+                    <Setter Property="BorderThickness" Value="0"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <!-- Stretch text to complete width -->
+            <!--<ListBox.HorizontalContentAlignment>Stretch</ListBox.HorizontalContentAlignment>-->
             <ListBox.CommandBindings>
                 <CommandBinding Command="ApplicationCommands.Copy" CanExecute="WhenTasksSelectedCanExecute" Executed="CopyTasksExecuted" />
                 <CommandBinding Command="ApplicationCommands.Paste" CanExecute="PasteTasksIntoTaskListCanExecute" Executed="PasteTasksIntoTaskListExecuted" />
@@ -381,12 +460,12 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel>
-                        <TextBlock local:UrlService.Text="{Binding Raw}" Style="{StaticResource WordWrapEnabledTextBlock}">
+                        <TextBlock local:ThemeService.Text="{Binding Raw}" Style="{StaticResource WordWrapEnabledTextBlock}">
                             <TextBlock.InputBindings>
                                 <MouseBinding Gesture="LeftDoubleClick" Command="{StaticResource UpdateTask}" />
                             </TextBlock.InputBindings>
                         </TextBlock>
-                    </StackPanel>
+                    </StackPanel >
                 </DataTemplate>
             </ListBox.ItemTemplate>
             <ListBox.GroupStyle>
@@ -401,10 +480,10 @@
                                                 <RowDefinition/>
                                                 <RowDefinition/>
                                             </Grid.RowDefinitions>
-                                            <TextBlock Grid.Row="0" local:UrlService.Text="{Binding Name}" Margin="0,10,0,3" FontWeight="Bold"/>
+                                            <TextBlock Grid.Row="0" local:ThemeService.Text="{Binding Name}" Margin="0,10,0,3" FontWeight="Bold" Foreground="#FFDCED72"/>
                                             <ItemsPresenter Grid.Row="1"/>
                                         </Grid>
-                                        </ControlTemplate>
+                                    </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
                         </Style>
@@ -412,13 +491,13 @@
                 </GroupStyle>
             </ListBox.GroupStyle>
         </ListBox>
-        
+
         <WebBrowser Grid.Row="2" Height="Auto" HorizontalAlignment="Stretch" Margin="0,0,0,0" Name="webBrowser1" VerticalAlignment="Stretch" Width="Auto" Visibility="Hidden" Grid.ColumnSpan="2" />
         <Button Grid.Row="0" Grid.RowSpan="2" Content="Print" Height="23" HorizontalAlignment="Left" Margin="0,23,207,0" Name="btnPrint" VerticalAlignment="Top" Width="92" Visibility="Hidden" Click="btnPrint_Click" />
         <Button Grid.Row="0" Grid.RowSpan="2"  Content="Cancel" Height="23" HorizontalAlignment="Left" Margin="97,23,0,0" Name="btnCancelPrint" VerticalAlignment="Top" Width="92" Visibility="Hidden" Click="btnCancelPrint_Click" />
         <!-- Status bar inspired by TodoTxtMac  -->
-        <StatusBar Grid.Row="3" Name="sbTaskSummary">
-            <TextBlock Name="lblFilterStatus" Text="{Binding ActiveFilterNumber, Mode=OneWay, Converter= {StaticResource filterToStatusConv}}" VerticalAlignment="Bottom"></TextBlock>
+        <StatusBar Grid.Row="3" Name="sbTaskSummary" Background="#FF1D2528" Foreground="#A5F2FFFC">
+            <TextBlock Name="lblFilterStatus" Text="{Binding ActiveFilterString, Mode=OneWay, Converter= {StaticResource filterToStatusConv}}" VerticalAlignment="Bottom"></TextBlock>
             <Separator></Separator>
             <TextBlock Text="Sort:"/>
             <TextBlock Text="{Binding SortType, Mode=OneWay, Converter={StaticResource sortTypeToDescConv}}"/>

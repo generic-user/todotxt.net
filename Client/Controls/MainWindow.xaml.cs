@@ -435,7 +435,7 @@ namespace Client
 
         private void SortByFileOrderExecuted(object sender, RoutedEventArgs e)
         {
-            ViewModel.SortList(SortType.None);            
+            ViewModel.SortList(SortType.OrderInFile);            
         }
 
         private void SortByContextExecuted(object sender, RoutedEventArgs e)
@@ -451,6 +451,11 @@ namespace Client
         private void SortByDueDateExecuted(object sender, RoutedEventArgs e)
         {
             ViewModel.SortList(SortType.DueDate);
+        }
+
+        private void SortByThresholdExecuted(object sender, RoutedEventArgs e)
+        {
+            ViewModel.SortList(SortType.Threshold);
         }
 
         private void SortByProjectExecuted(object sender, RoutedEventArgs e)

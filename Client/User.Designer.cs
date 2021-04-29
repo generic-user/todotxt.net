@@ -13,7 +13,7 @@ namespace Client {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.6.0.0")]
     internal sealed partial class User : global::System.Configuration.ApplicationSettingsBase {
         
         private static User defaultInstance = ((User)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new User())));
@@ -326,13 +326,49 @@ namespace Client {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Black")]
+        [global::System.Configuration.DefaultSettingValueAttribute("GhostWhite")]
         public string TaskListFontBrushColor {
             get {
                 return ((string)(this["TaskListFontBrushColor"]));
             }
             set {
                 this["TaskListFontBrushColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("DarkSeaGreen")]
+        public string ProjectBrushColor {
+            get {
+                return ((string)(this["ProjectBrushColor"]));
+            }
+            set {
+                this["ProjectBrushColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("LightSlateGray")]
+        public string ContextBrushColor {
+            get {
+                return ((string)(this["ContextBrushColor"]));
+            }
+            set {
+                this["ContextBrushColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("RosyBrown")]
+        public string DateBrushColor {
+            get {
+                return ((string)(this["DateBrushColor"]));
+            }
+            set {
+                this["DateBrushColor"] = value;
             }
         }
         
@@ -446,6 +482,114 @@ namespace Client {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("None")]
+        public string SortTypePreset1 {
+            get {
+                return ((string)(this["SortTypePreset1"]));
+            }
+            set {
+                this["SortTypePreset1"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("None")]
+        public string SortTypePreset2 {
+            get {
+                return ((string)(this["SortTypePreset2"]));
+            }
+            set {
+                this["SortTypePreset2"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("None")]
+        public string SortTypePreset3 {
+            get {
+                return ((string)(this["SortTypePreset3"]));
+            }
+            set {
+                this["SortTypePreset3"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("None")]
+        public string SortTypePreset4 {
+            get {
+                return ((string)(this["SortTypePreset4"]));
+            }
+            set {
+                this["SortTypePreset4"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("None")]
+        public string SortTypePreset5 {
+            get {
+                return ((string)(this["SortTypePreset5"]));
+            }
+            set {
+                this["SortTypePreset5"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("None")]
+        public string SortTypePreset6 {
+            get {
+                return ((string)(this["SortTypePreset6"]));
+            }
+            set {
+                this["SortTypePreset6"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("None")]
+        public string SortTypePreset7 {
+            get {
+                return ((string)(this["SortTypePreset7"]));
+            }
+            set {
+                this["SortTypePreset7"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("None")]
+        public string SortTypePreset8 {
+            get {
+                return ((string)(this["SortTypePreset8"]));
+            }
+            set {
+                this["SortTypePreset8"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("None")]
+        public string SortTypePreset9 {
+            get {
+                return ((string)(this["SortTypePreset9"]));
+            }
+            set {
+                this["SortTypePreset9"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool WordWrap {
             get {
@@ -525,6 +669,18 @@ namespace Client {
             }
             set {
                 this["CheckForUpdates"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SelectCurrentFilterString {
+            get {
+                return ((bool)(this["SelectCurrentFilterString"]));
+            }
+            set {
+                this["SelectCurrentFilterString"] = value;
             }
         }
     }

@@ -57,19 +57,19 @@ namespace Client
             }
         }
 
-        private int _activeFilterNumber = -1;
-        public int ActiveFilterNumber
+        private String _activeFilterString = "";
+        public String ActiveFilterString
         {
             get
             {
-                return _activeFilterNumber;
+                return _activeFilterString;
             }
             private set
             {
-                if (_activeFilterNumber != value)
+                if (_activeFilterString != value)
                 {
-                    _activeFilterNumber = value;
-                    RaiseProperyChanged(nameof(ActiveFilterNumber));
+                    _activeFilterString = value;
+                    RaiseProperyChanged(nameof(ActiveFilterString));
                 }
             }
         }
@@ -182,7 +182,7 @@ namespace Client
 
             SortType = (SortType)User.Default.CurrentSort;
 
-            ActiveFilterNumber=0;
+            ActiveFilterString = User.Default.FilterText;
 
             if (!string.IsNullOrEmpty(User.Default.FilePath))
             {
@@ -387,11 +387,14 @@ namespace Client
                     case SortType.Created:
                         sortProperty = "CreationDate";
                         break;
+                    case SortType.Threshold:
+                        sortProperty = "ThresholdDate";
+                        break;
                 }
 
                 _myView = (CollectionView)CollectionViewSource.GetDefaultView(sortedTaskList);
 
-                if (User.Default.AllowGrouping && SortType != SortType.Alphabetical && SortType != SortType.None)
+                if (User.Default.AllowGrouping && SortType != SortType.Alphabetical && SortType != SortType.OrderInFile)
                 {
                     if (_myView.CanGroup)
                     {
@@ -552,6 +555,21 @@ namespace Client
             f.FilterTextPreset7 = User.Default.FilterTextPreset7;
             f.FilterTextPreset8 = User.Default.FilterTextPreset8;
             f.FilterTextPreset9 = User.Default.FilterTextPreset9;
+            f.sortTypePreset1 = (SortType)Enum.Parse(typeof(SortType), User.Default.SortTypePreset1);
+            f.sortTypePreset2 = (SortType)Enum.Parse(typeof(SortType), User.Default.SortTypePreset2);
+            f.sortTypePreset3 = (SortType)Enum.Parse(typeof(SortType), User.Default.SortTypePreset3);
+            f.sortTypePreset4 = (SortType)Enum.Parse(typeof(SortType), User.Default.SortTypePreset4);
+            f.sortTypePreset5 = (SortType)Enum.Parse(typeof(SortType), User.Default.SortTypePreset5);
+            f.sortTypePreset6 = (SortType)Enum.Parse(typeof(SortType), User.Default.SortTypePreset6);
+            f.sortTypePreset7 = (SortType)Enum.Parse(typeof(SortType), User.Default.SortTypePreset7);
+            f.sortTypePreset8 = (SortType)Enum.Parse(typeof(SortType), User.Default.SortTypePreset8);
+            f.sortTypePreset9 = (SortType)Enum.Parse(typeof(SortType), User.Default.SortTypePreset9);
+
+            // select text of main filter for easy overwrite
+            if(User.Default.SelectCurrentFilterString)
+            {
+                f.tbFilter.SelectAll();
+            }
 
             if (f.ShowDialog().Value)
             {
@@ -566,11 +584,22 @@ namespace Client
                 User.Default.FilterTextPreset8 = f.FilterTextPreset8.Trim();
                 User.Default.FilterTextPreset9 = f.FilterTextPreset9.Trim();
 
+                User.Default.SortTypePreset1 = f.sortTypePreset1.ToString();
+                User.Default.SortTypePreset2 = f.sortTypePreset2.ToString();
+                User.Default.SortTypePreset3 = f.sortTypePreset3.ToString();
+                User.Default.SortTypePreset4 = f.sortTypePreset4.ToString();
+                User.Default.SortTypePreset5 = f.sortTypePreset5.ToString();
+                User.Default.SortTypePreset6 = f.sortTypePreset6.ToString();
+                User.Default.SortTypePreset7 = f.sortTypePreset7.ToString();
+                User.Default.SortTypePreset8 = f.sortTypePreset8.ToString();
+                User.Default.SortTypePreset9 = f.sortTypePreset9.ToString();
+
                 User.Default.Save();
 
                 GetSelectedTasks();
 				UpdateDisplayedTasks();
                 SetSelectedTasks();
+                ActiveFilterString = User.Default.FilterText;
             }
         }
 
@@ -588,7 +617,10 @@ namespace Client
                     include = !task.Raw.Contains("h:1");
 
                 if (include)
-                    if (User.Default.FilterFutureTasks)
+
+                    // hide future tasks only if filter doesn't use threshold
+                    if (User.Default.FilterFutureTasks && !filters.Contains("t:"))
+
                         include = String.IsNullOrEmpty(task.ThresholdDate) || task.ThresholdDate.IsDateLessThan(DateTime.Now.AddDays(1));
 
                 if (include)
@@ -597,6 +629,14 @@ namespace Client
                         var filter in
                         filters.Split(new string[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries))
                     {
+                        // get evaluated threshold string in format t:yyyy-MM-dd
+                        string thresholdString = Task.ParseDate(filter, Task.ThresholdRelativePattern);
+
+                        if(task.ThresholdDate == thresholdString.Replace("t:", ""))
+                        {
+                            continue;
+                        }
+
                         if (filter.Equals("due:today", StringComparison.OrdinalIgnoreCase)
                             && task.DueDate == DateTime.Now.ToString("yyyy-MM-dd"))
                             continue;
@@ -722,6 +762,9 @@ namespace Client
         public void ApplyHideFutureTasks()
         {
             User.Default.FilterFutureTasks = !User.Default.FilterFutureTasks;
+
+            GetSelectedTasks();
+
             UpdateDisplayedTasks();
             SetSelectedTasks();
 
@@ -742,6 +785,8 @@ namespace Client
 
         private void ApplyFilterPreset(int filterPresetNumber)
         {
+
+            SortType sortType = SortType.None;
             switch (filterPresetNumber)
             {
                 case 0:
@@ -749,33 +794,47 @@ namespace Client
                     break;
                 case 1:
                     User.Default.FilterText = User.Default.FilterTextPreset1;
+                    Enum.TryParse(User.Default.SortTypePreset1, out sortType);
                     break;
                 case 2:
                     User.Default.FilterText = User.Default.FilterTextPreset2;
+                    Enum.TryParse(User.Default.SortTypePreset2, out sortType);
                     break;
                 case 3:
                     User.Default.FilterText = User.Default.FilterTextPreset3;
+                    Enum.TryParse(User.Default.SortTypePreset3, out sortType);
                     break;
                 case 4:
                     User.Default.FilterText = User.Default.FilterTextPreset4;
+                    Enum.TryParse(User.Default.SortTypePreset4, out sortType);
                     break;
                 case 5:
                     User.Default.FilterText = User.Default.FilterTextPreset5;
+                    Enum.TryParse(User.Default.SortTypePreset5, out sortType);
                     break;
                 case 6:
                     User.Default.FilterText = User.Default.FilterTextPreset6;
+                    Enum.TryParse(User.Default.SortTypePreset6, out sortType);
                     break;
                 case 7:
                     User.Default.FilterText = User.Default.FilterTextPreset7;
+                    Enum.TryParse(User.Default.SortTypePreset7, out sortType);
                     break;
                 case 8:
                     User.Default.FilterText = User.Default.FilterTextPreset8;
+                    Enum.TryParse(User.Default.SortTypePreset8, out sortType);
                     break;
                 case 9:
                     User.Default.FilterText = User.Default.FilterTextPreset9;
+                    Enum.TryParse(User.Default.SortTypePreset9, out sortType);
                     break;
                 default:
                     return;
+            }
+
+            if(sortType != SortType.None)
+            {
+                SortType = sortType;
             }
             
             GetSelectedTasks();
@@ -784,7 +843,7 @@ namespace Client
             
             User.Default.Save();
 
-            ActiveFilterNumber = filterPresetNumber;
+            ActiveFilterString = User.Default.FilterText;
         }
         #endregion
 
@@ -838,6 +897,14 @@ namespace Client
                         .ThenBy(t => (string.IsNullOrEmpty(t.Priority) ? "(zzz)" : t.Priority))
                         .ThenBy(t => (string.IsNullOrEmpty(t.CreationDate) ? "0000-00-00" : t.CreationDate));
 
+                case SortType.Threshold:
+                    _window.SetSelectedMenuItem(_window.sortMenu, "Threshold");
+                    return tasks.OrderBy(t => (string.IsNullOrEmpty(t.ThresholdDate) ? "9999-99-99" : t.ThresholdDate))
+                        .ThenBy(t => t.Completed)
+                        .ThenBy(t => (string.IsNullOrEmpty(t.Priority) ? "(zzz)" : t.Priority))
+                        .ThenBy(t => (string.IsNullOrEmpty(t.DueDate) ? "9999-99-99" : t.DueDate))
+                        .ThenBy(t => (string.IsNullOrEmpty(t.CreationDate) ? "0000-00-00" : t.CreationDate));
+
                 case SortType.Priority:
                     _window.SetSelectedMenuItem(_window.sortMenu, "Priority");
                     return tasks.OrderBy(t => (string.IsNullOrEmpty(t.Priority) ? "(zzz)" : t.Priority))
@@ -869,8 +936,10 @@ namespace Client
                         .ThenBy(t => (string.IsNullOrEmpty(t.Priority) ? "(zzz)" : t.Priority))
                         .ThenBy(t => (string.IsNullOrEmpty(t.DueDate) ? "9999-99-99" : t.DueDate));
 
-                default:
+                case SortType.OrderInFile:
                     _window.SetSelectedMenuItem(_window.sortMenu, "File");
+                    return tasks;
+                default:
                     return tasks;
             }
         }
@@ -1586,7 +1655,10 @@ namespace Client
                 User.Default.TaskListFontStyle != o.TaskListFont.Style.ToString() ||
                 User.Default.TaskListFontWeight != o.TaskListFont.Weight.ToString() ||
                 User.Default.TaskListFontStretch != o.TaskListFont.Stretch.ToString() ||
-                User.Default.TaskListFontBrushColor != o.TaskListFont.BrushColor.ToString()
+                User.Default.TaskListFontBrushColor != o.TaskListFont.BrushColor.ToString() ||
+                User.Default.ProjectBrushColor != o.colorPickerProject.SelectedColor.Brush.ToString() ||
+                User.Default.ContextBrushColor != o.colorPickerContext.SelectedColor.Brush.ToString() ||
+                User.Default.DateBrushColor != o.colorPickerDate.SelectedColor.Brush.ToString()
                 );
 
             User.Default.ArchiveFilePath = o.tbArchiveFile.Text;
@@ -1619,6 +1691,11 @@ namespace Client
 
             User.Default.DisplayStatusBar = o.cbDisplayStatusBar.IsChecked.Value;
             User.Default.CheckForUpdates = o.cbCheckForUpdates.IsChecked.Value;
+            User.Default.SelectCurrentFilterString = o.cbSelectCurrentFilterString.IsChecked.Value;
+
+            User.Default.ProjectBrushColor = o.colorPickerProject.SelectedColor.Brush.ToString();
+            User.Default.ContextBrushColor = o.colorPickerContext.SelectedColor.Brush.ToString();
+            User.Default.DateBrushColor = o.colorPickerDate.SelectedColor.Brush.ToString();
 
             User.Default.Save();
 
