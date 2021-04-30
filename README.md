@@ -17,6 +17,13 @@ This is a fork of todotxt.net.
 ![](main.png)
 - define sorting for your filters (inspired by [Simpletask](https://github.com/mpcjanssen/simpletask-android))
 ![](filter_dialog.png)
+
+#### What is a thresholddate?
+
+I think "threshold" is a weird term for it, too. It's really a start date. Or a "don't start until" date. Adding threshold dates is a way to indicate "future tasks". A threshold date is formatted as: t:yyyy-mm-dd.
+
+The relevant definition of "threshold" is: a level, point, or value above which something is true or will take place and below which it is not or will not.
+
 ----
 
 ### Original Readme
